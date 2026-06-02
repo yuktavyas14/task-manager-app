@@ -1,30 +1,28 @@
 package com.yukta.authservice.controller;
 
-
-import com.yukta.authservice.entity.User;
+import com.yukta.authservice.dto.AuthResponse;
+import com.yukta.authservice.dto.LoginRequest;
+import com.yukta.authservice.dto.RegisterRequest;
 import com.yukta.authservice.service.AuthService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
-    @PostMapping("/signup")
-    public String signup(@RequestBody User user) {
-        return authService.signup(user);
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        authService.register(request);
+        return ResponseEntity.ok("User Registered");
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        return authService.login(user);
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

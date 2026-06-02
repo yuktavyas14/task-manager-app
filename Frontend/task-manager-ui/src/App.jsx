@@ -1,15 +1,34 @@
 import Dashboard from "./pages/Dashboard";
-import {ToastContainer} from "react-toastify";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Register from "./component/Register.jsx";
+import Login from "./component/Login.jsx";
 
 function App() {
-  return <>
-    <Dashboard />
+  return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
 
-    <ToastContainer
-        position="top-right"
-        autoClose={3000}
-    />
-  </>;
+          <Route
+              path="/register"
+              element={<Register />}
+          />
+
+          <Route
+              path="/dashboard"
+              element={<Dashboard />}
+          />
+        </Routes>
+      </BrowserRouter>
+  );
+  // return <>
+  //   <Dashboard />
+  //
+  //   <ToastContainer
+  //       position="top-right"
+  //       autoClose={3000}
+  //   />
+  // </>;
 
 }
 

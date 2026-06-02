@@ -1,37 +1,56 @@
 package com.yukta.authservice.service;
 
 
+import com.yukta.authservice.dto.AuthResponse;
+import com.yukta.authservice.dto.LoginRequest;
+import com.yukta.authservice.dto.RegisterRequest;
 import com.yukta.authservice.entity.User;
 import com.yukta.authservice.repository.UserRepository;
-import com.yukta.authservice.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
+import com.yukta.authservice.utils.JwtUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
-
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
 
-    public String signup(User user){
-        userRepository.save(user);
-        return "User registered";
+    private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthService(UserRepository userRepository, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    public void register(RegisterRequest request) {
+        User user = new User();
+        user.setUsername(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+    }
 
-    public String login(User request) {
-
-        User user = userRepository.findByUsernameIgnoreCase(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository
+                .findByUsernameIgnoreCase(request.getUsername());
+        boolean valid =
+                passwordEncoder.matches(
+                        request.getPassword(),
+                        user.getPassword()
+                );
+        if (!valid) {
+            throw new RuntimeException(
+                    "Invalid Credentials"
+            );
         }
 
-        return "Login successful";
+        String token =
+                jwtUtils.generateToken(
+                        user.getEmail()
+                );
+
+        return new AuthResponse(token);
     }
 }

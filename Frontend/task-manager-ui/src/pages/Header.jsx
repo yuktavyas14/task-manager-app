@@ -1,4 +1,11 @@
+import {useNavigate} from "react-router-dom";
+
 function Header({ openModal }) {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/");
+    };
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container">
@@ -23,6 +30,15 @@ function Header({ openModal }) {
                                      onClick={openModal}
                             >
                                 ADD TASK
+                            </button>
+                        </li>
+                        <li className="nav-item mx-5">
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={handleLogout}
+                            >
+                                Logout
                             </button>
                         </li>
                     </ul>
